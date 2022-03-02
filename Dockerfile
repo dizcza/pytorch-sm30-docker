@@ -5,7 +5,7 @@
 #
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
-ARG BASE_IMAGE=ubuntu:18.04
+ARG BASE_IMAGE=nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 ARG PYTHON_VERSION=3.9
 
 FROM ${BASE_IMAGE} as dev-base
@@ -58,7 +58,7 @@ FROM conda as conda-installs
 ARG PYTHON_VERSION=3.9
 ARG CUDA_VERSION=10.2
 ARG CUDA_CHANNEL=nvidia
-ARG INSTALL_CHANNEL=pytorch-nightly
+ARG INSTALL_CHANNEL=pytorch
 ENV CONDA_OVERRIDE_CUDA=${CUDA_VERSION}
 RUN /opt/conda/bin/conda install -c "${INSTALL_CHANNEL}" -c "${CUDA_CHANNEL}" -y python=${PYTHON_VERSION} cudatoolkit=${CUDA_VERSION} pytorch-mutex && \
     /opt/conda/bin/conda install -c "${INSTALL_CHANNEL}" --no-deps torchvision && \

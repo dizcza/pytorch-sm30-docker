@@ -1,12 +1,7 @@
 DOCKER_REGISTRY           = docker.io
-DOCKER_ORG                = $(shell docker info 2>/dev/null | sed '/Username:/!d;s/.* //')
-DOCKER_IMAGE              = pytorch
+DOCKER_ORG                = dizcza
+DOCKER_IMAGE              = pytorch-sm30
 DOCKER_FULL_NAME          = $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_IMAGE)
-
-ifeq ("$(DOCKER_ORG)","")
-$(warning WARNING: No docker user found using results from whoami)
-DOCKER_ORG                = $(shell whoami)
-endif
 
 CUDA_VERSION              = 10.2
 CUDNN_VERSION             = 7
