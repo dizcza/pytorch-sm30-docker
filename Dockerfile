@@ -33,11 +33,10 @@ WORKDIR /opt/pytorch
 RUN curl -fsSL -o nccl.tar.gz https://github.com/NVIDIA/nccl/archive/refs/tags/v2.9.9-1.tar.gz && tar xzf nccl.tar.gz && rm nccl.tar.gz
 RUN cd nccl-2.9.9-1 && make -j3 src.build NVCC_GENCODE="-gencode=arch=compute_30,code=sm_30" && make install
 
-RUN echo https://github.com/pytorch/pytorch/releases/download/"${PYTORCH_VERSION}"/pytorch-"${PYTORCH_VERSION}".tar.gz
-
 RUN curl -fsSL -o pytorch.tar.gz https://github.com/pytorch/pytorch/releases/download/${PYTORCH_VERSION}/pytorch-${PYTORCH_VERSION}.tar.gz && tar xzf pytorch.tar.gz && rm pytorch.tar.gz
 
 RUN cd pytorch-${PYTORCH_VERSION} && \
+    echo ${PYTORCH_VERSION} | tail -c +2 > version.txt && \
     TORCH_CUDA_ARCH_LIST="3.0" TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
     CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \
     USE_ROCM=0 USE_SYSTEM_NCCL=1 \
@@ -47,9 +46,15 @@ RUN cd pytorch-${PYTORCH_VERSION} && \
 ENV CONDA_OVERRIDE_CUDA=${CUDA_VERSION}
 RUN /opt/conda/bin/conda install -c "${INSTALL_CHANNEL}" -c "${CUDA_CHANNEL}" -y python=${PYTHON_VERSION} cudatoolkit=${CUDA_VERSION} && /opt/conda/bin/conda clean -ya
 
-ENV TORCHVISION_VERSION 0.11.3
-RUN curl -fsSL -o torchvision.tar.gz https://github.com/pytorch/vision/archive/refs/tags/v${TORCHVISION_VERSION}.tar.gz && tar xzf torchvision.tar.gz && rm torchvision.tar.gz
-RUN cd vision-${TORCHVISION_VERSION} && pip install --no-deps .
+ENV TORCHVISION_VERSION v0.11.3
+RUN sed -i "s/supported_arches = \[/supported_arches = \['3.0', /g" /opt/conda/lib/python3.9/site-packages/torch/utils/cpp_extension.py
+RUN export TORCHVISION_VERSION_SHORT=$(echo ${TORCHVISION_VERSION} | tail -c +2) ; \
+    curl -fsSL -o torchvision.tar.gz https://github.com/pytorch/vision/archive/refs/tags/${TORCHVISION_VERSION}.tar.gz && \
+    tar xzf torchvision.tar.gz && \
+    rm torchvision.tar.gz && \
+    cd vision-${TORCHVISION_VERSION_SHORT} && \
+    echo ${TORCHVISION_VERSION_SHORT} > version.txt && \
+    FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="3.0" pip install .
 
 LABEL com.nvidia.volumes.needed="nvidia_driver"
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -61,5 +66,4 @@ ENV PATH /opt/conda/bin:$PATH
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
-ENV PYTORCH_VERSION ${PYTORCH_VERSION}
 
