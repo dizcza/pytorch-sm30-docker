@@ -4,13 +4,13 @@
 
 [![](https://img.shields.io/docker/image-size/dizcza/pytorch-sm30/latest?label=latest)](https://hub.docker.com/r/dizcza/pytorch-sm30/tags)
 
-This Dockerfile serves the latest pytorch and torchvision for the sm\_30 NVIDIA architecture (compute capability 3.0).
+This Dockerfile serves the latest possible pytorch (v1.10.2) and torchvision (v0.11.3) that could be compiled for the sm\_30 NVIDIA architecture (compute capability 3.0).
 
 CUDA 10.2 cuDNN 7.
 
 ## Usage
 
-Pre-built images are served on the dockerhub. The builds are passing even though GitHub shows them as failed (in red) because of the timeout (it takes >3 hours to build the image).
+Pre-built images are served on the dockerhub.
 
 ```
 docker run -it --gpus all dizcza/pytorch-sm30 python
@@ -27,6 +27,8 @@ tensor([ 0.8824, -0.0490,  2.0234, -1.7939,  0.6414], device='cuda:0')
 ```
 
 ## Local build
+
+Note: it'll take 3+ hours to build the image.
 
 ```
 docker build -t pytorch-sm30 .
