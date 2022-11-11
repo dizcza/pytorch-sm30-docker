@@ -27,7 +27,8 @@ RUN curl -fsSL -o ~/miniconda.sh -O https://repo.anaconda.com/miniconda/Minicond
     chmod +x ~/miniconda.sh && \
     ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
-    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build pyyaml numpy ipython requests typing_extensions && \
+    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build pyyaml numpy ipython requests typing_extensions pip && \
+    /opt/conda/bin/pip install setuptools==59.5.0 && \
     /opt/conda/bin/conda clean -ya
 
 WORKDIR /opt/pytorch
