@@ -6,6 +6,7 @@
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
