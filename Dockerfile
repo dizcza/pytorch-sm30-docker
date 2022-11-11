@@ -6,6 +6,7 @@
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
@@ -26,7 +27,8 @@ RUN curl -fsSL -o ~/miniconda.sh -O https://repo.anaconda.com/miniconda/Minicond
     chmod +x ~/miniconda.sh && \
     ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
-    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build pyyaml numpy ipython requests typing_extensions && \
+    /opt/conda/bin/conda install -y python=${PYTHON_VERSION} conda-build pyyaml numpy ipython requests typing_extensions pip && \
+    /opt/conda/bin/pip install setuptools==59.5.0 && \
     /opt/conda/bin/conda clean -ya
 
 WORKDIR /opt/pytorch
